@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
 import numpy as np
-import time
 from pivot_strategy import PivotStrategy
 from quick_select import quickselect
 from quick_sort import quicksort
