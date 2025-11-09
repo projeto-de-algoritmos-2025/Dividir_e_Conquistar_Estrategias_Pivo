@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
 import numpy as np
-from pivot_strategy import PivotStrategy
+from Dividir_e_Conquistar_Densidade_Grafica.pivot_strategy import PivotStrategy
 from quick_select import quickselect
 from Dividir_e_Conquistar_Densidade_Grafica.quick_sort import quicksort
 
