@@ -8,11 +8,13 @@ from quick_sort import quicksort
 
 
 class QuickSelectVisualizer:
-    def __init__(self, data, k):
+    def __init__(self, data, k, pivot_strategy_normal=None, pivot_name="Normal"):
         self.original_data = data.copy()
         self.data_normal = data.copy()
         self.data_median = data.copy()
         self.k = k
+        self.pivot_strategy_normal = pivot_strategy_normal or PivotStrategy.last_element
+        self.pivot_name = pivot_name
         self.steps_normal = []
         self.steps_median = []
         self.comparisons_normal = 0
@@ -27,7 +29,7 @@ class QuickSelectVisualizer:
         if len(self.data_normal) > 0:
             self.result_normal = quickselect(
                 self.data_normal, 0, len(self.data_normal) - 1, self.k, 
-                self.steps_normal, PivotStrategy.last_element, stats_normal
+                self.steps_normal, self.pivot_strategy_normal, stats_normal
             )
         self.comparisons_normal = stats_normal['comparisons']
         self.partitions_normal = stats_normal['partitions']
@@ -43,7 +45,7 @@ class QuickSelectVisualizer:
     
     def animate(self, interval=200):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
-        fig.suptitle(f'Comparação: QuickSelect Normal vs QuickSelect com Mediana das Medianas\nBuscando o {self.k+1}º menor elemento', 
+        fig.suptitle(f'Comparação: QuickSelect ({self.pivot_name}) vs QuickSelect com Mediana das Medianas\nBuscando o {self.k+1}º menor elemento', 
                      fontsize=16, fontweight='bold')
         
         max_steps = max(len(self.steps_normal), len(self.steps_median))
@@ -74,7 +76,7 @@ class QuickSelectVisualizer:
                 
                 bars1 = ax1.bar(range(len(arr)), arr, color=colors, edgecolor='black')
                 title_suffix = ' - ENCONTRADO! ✓' if step['type'] == 'found' else ''
-                ax1.set_title(f'QuickSelect Normal{title_suffix}\nPasso {frame + 1}/{len(self.steps_normal)}', 
+                ax1.set_title(f'QuickSelect ({self.pivot_name}){title_suffix}\nPasso {frame + 1}/{len(self.steps_normal)}', 
                              fontsize=14, fontweight='bold')
                 ax1.set_ylabel('Valor', fontsize=12)
                 ax1.set_xlabel(f'Comparações: {self.comparisons_normal} | Partições: {self.partitions_normal}', 
@@ -84,7 +86,7 @@ class QuickSelectVisualizer:
                 colors = ['lightgray'] * len(arr)
                 colors[self.k] = 'green'
                 bars1 = ax1.bar(range(len(arr)), arr, color=colors, edgecolor='black')
-                ax1.set_title(f'QuickSelect Normal - COMPLETO ✓\nResultado: {self.result_normal}', 
+                ax1.set_title(f'QuickSelect ({self.pivot_name}) - COMPLETO ✓\nResultado: {self.result_normal}', 
                              fontsize=14, fontweight='bold', color='green')
                 ax1.set_ylabel('Valor', fontsize=12)
                 ax1.set_xlabel(f'Comparações: {self.comparisons_normal} | Partições: {self.partitions_normal}', 
@@ -147,10 +149,12 @@ class QuickSelectVisualizer:
 
 
 class QuickSortVisualizer:
-    def __init__(self, data):
+    def __init__(self, data, pivot_strategy_normal=None, pivot_name="Normal"):
         self.original_data = data.copy()
         self.data_normal = data.copy()
         self.data_median = data.copy()
+        self.pivot_strategy_normal = pivot_strategy_normal or PivotStrategy.last_element
+        self.pivot_name = pivot_name
         self.steps_normal = []
         self.steps_median = []
         self.comparisons_normal = 0
@@ -163,7 +167,7 @@ class QuickSortVisualizer:
         if len(self.data_normal) > 0:
             quicksort(
                 self.data_normal, 0, len(self.data_normal) - 1, 
-                self.steps_normal, PivotStrategy.last_element, stats_normal
+                self.steps_normal, self.pivot_strategy_normal, stats_normal
             )
         self.comparisons_normal = stats_normal['comparisons']
         self.swaps_normal = stats_normal['swaps']
@@ -179,7 +183,7 @@ class QuickSortVisualizer:
     
     def animate(self, interval=100):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
-        fig.suptitle('Comparação: QuickSort Normal vs QuickSort com Mediana das Medianas', 
+        fig.suptitle(f'Comparação: QuickSort ({self.pivot_name}) vs QuickSort com Mediana das Medianas', 
                      fontsize=16, fontweight='bold')
         
         max_steps = max(len(self.steps_normal), len(self.steps_median))
@@ -203,7 +207,7 @@ class QuickSortVisualizer:
                     colors[pivot_idx] = 'red'
                 
                 bars1 = ax1.bar(range(len(arr)), arr, color=colors, edgecolor='black')
-                ax1.set_title(f'QuickSort Normal\nPasso {frame + 1}/{len(self.steps_normal)}', 
+                ax1.set_title(f'QuickSort ({self.pivot_name})\nPasso {frame + 1}/{len(self.steps_normal)}', 
                              fontsize=14, fontweight='bold')
                 ax1.set_ylabel('Valor', fontsize=12)
                 ax1.set_xlabel(f'Comparações: {self.comparisons_normal} | Trocas: {self.swaps_normal}', 
@@ -211,7 +215,7 @@ class QuickSortVisualizer:
             else:
                 arr = self.data_normal
                 bars1 = ax1.bar(range(len(arr)), arr, color='green', edgecolor='black')
-                ax1.set_title('QuickSort Normal - COMPLETO ✓', fontsize=14, 
+                ax1.set_title(f'QuickSort ({self.pivot_name}) - COMPLETO ✓', fontsize=14, 
                              fontweight='bold', color='green')
                 ax1.set_ylabel('Valor', fontsize=12)
                 ax1.set_xlabel(f'Comparações: {self.comparisons_normal} | Trocas: {self.swaps_normal}', 
@@ -263,6 +267,32 @@ class QuickSortVisualizer:
         return anim
 
 
+def select_pivot_strategy():
+    print("\n" + "=" * 70)
+    print("SELEÇÃO DE ESTRATÉGIA DE PIVÔ")
+    print("=" * 70)
+    print("\nEscolha a estratégia de pivô para a versão 'Normal':")
+    print("1 - Último elemento (padrão)")
+    print("2 - Primeiro elemento")
+    print("3 - Elemento do meio")
+    print("4 - Mediana de três elementos")
+    print("5 - Elemento aleatório")
+    
+    pivot_choice = input("\nDigite o número da estratégia (1-5): ").strip()
+    
+    strategies = {
+        "1": ("Último Elemento", PivotStrategy.last_element),
+        "2": ("Primeiro Elemento", PivotStrategy.first_element),
+        "3": ("Elemento do Meio", PivotStrategy.middle_element),
+        "4": ("Mediana de Três", PivotStrategy.median_of_three),
+        "5": ("Aleatório", PivotStrategy.random_element),
+    }
+    
+    name, strategy = strategies.get(pivot_choice, ("Último Elemento", PivotStrategy.last_element))
+    print(f"\nEstratégia selecionada: {name}")
+    return name, strategy
+
+
 def main():
     print("=" * 70)
     print("COMPARAÇÃO DE ALGORITMOS: Normal vs Mediana das Medianas")
@@ -273,8 +303,9 @@ def main():
     
     choice = input("\nDigite 1 ou 2: ").strip()
     
+    pivot_name, pivot_strategy = select_pivot_strategy()
+    
     if choice == "2":
-        # QuickSelect
         print("\n" + "=" * 70)
         print("QUICKSELECT - Encontrar k-ésimo menor elemento")
         print("=" * 70)
@@ -286,18 +317,18 @@ def main():
         print(f"Array original (ORDENADO): {data}")
         print(f"Tamanho: {len(data)} elementos")
         
-        k = 0  # Buscar o menor elemento (pior caso - requer percorrer todo array)
+        k = 0
         print(f"Buscando o {k+1}º menor elemento (índice {k})")
         print(f"Este é o PIOR CASO para QuickSelect com pivô no final!\n")
         
-        visualizer = QuickSelectVisualizer(data, k)
+        visualizer = QuickSelectVisualizer(data, k, pivot_strategy, pivot_name)
         
-        print("Executando QuickSelect Normal...")
+        print(f"Executando QuickSelect com {pivot_name}...")
         print("Executando QuickSelect com Mediana das Medianas...")
         visualizer.run_selects()
         
         print(f"\nResultados:")
-        print(f"QuickSelect Normal:")
+        print(f"QuickSelect com {pivot_name}:")
         print(f"  - Resultado encontrado: {visualizer.result_normal}")
         print(f"  - Comparações: {visualizer.comparisons_normal}")
         print(f"  - Partições realizadas: {visualizer.partitions_normal}")
@@ -313,7 +344,6 @@ def main():
         visualizer.animate(interval=300)
         
     else:
-        # QuickSort (padrão)
         print("\n" + "=" * 70)
         print("QUICKSORT - Ordenação Completa")
         print("=" * 70)
@@ -326,14 +356,14 @@ def main():
         print(f"Tamanho: {len(data)} elementos")
         print(f"Este é o PIOR CASO para QuickSort com pivô no final!\n")
         
-        visualizer = QuickSortVisualizer(data)
+        visualizer = QuickSortVisualizer(data, pivot_strategy, pivot_name)
         
-        print("Executando QuickSort Normal...")
+        print(f"Executando QuickSort com {pivot_name}...")
         print("Executando QuickSort com Mediana das Medianas...")
         visualizer.run_sorts()
         
         print(f"\nResultados:")
-        print(f"QuickSort Normal:")
+        print(f"QuickSort com {pivot_name}:")
         print(f"  - Comparações: {visualizer.comparisons_normal}")
         print(f"  - Trocas: {visualizer.swaps_normal}")
         print(f"  - Passos na animação: {len(visualizer.steps_normal)}")
@@ -343,7 +373,7 @@ def main():
         print(f"  - Trocas: {visualizer.swaps_median}")
         print(f"  - Passos na animação: {len(visualizer.steps_median)}")
         
-        print(f"\nArray ordenado (Normal): {visualizer.data_normal}")
+        print(f"\nArray ordenado ({pivot_name}): {visualizer.data_normal}")
         print(f"Array ordenado (Mediana): {visualizer.data_median}")
         
         print("\nIniciando animação...")
