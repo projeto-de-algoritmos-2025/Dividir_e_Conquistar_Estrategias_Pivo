@@ -1,2 +1,4 @@
 # Dividir_e_Conquistar_Densidade_Grafica
-a
+
+Victor Pontual Guedes Arruda Nobrega - 211029601
+Caio Ferreira Duarte - 231026901
