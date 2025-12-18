@@ -74,7 +74,4 @@ python app.py
 ## Apresentação
 
 Vídeo disponível em:
-https://youtu.be/yI_kjr9UTKI
-
-
-Apresentação: https://youtu.be/22VbiqcumpQ
+https://youtu.be/22VbiqcumpQ
